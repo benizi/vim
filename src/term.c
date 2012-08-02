@@ -2741,6 +2741,36 @@ term_bg_color(n)
 }
 
     static void
+term_color_24bit(color, prefix)
+    long	color;
+    int	prefix;
+{
+    char buf[20];
+    unsigned char r = 0, g = 0, b = 0;
+    if (color == INVALCOLOR)
+	return;
+    r = (color >> 16) & 0xff;
+    g = (color >> 8) & 0xff;
+    b = color & 0xff;
+    sprintf(buf, "\033[%d;2;%d;%d;%dm", prefix, r, g, b);
+    OUT_STR(buf);
+}
+
+    void
+term_color_24bit_fg(color)
+    long color;
+{
+    term_color_24bit(color, 38);
+}
+
+    void
+term_color_24bit_bg(color)
+    long color;
+{
+    term_color_24bit(color, 48);
+}
+
+    static void
 term_color(s, n)
     char_u	*s;
     int		n;

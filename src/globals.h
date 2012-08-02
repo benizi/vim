@@ -364,6 +364,8 @@ EXTERN int	highlight_stlnc[9];		/* On top of user */
 #endif
 #ifdef FEAT_GUI
 EXTERN char_u	*use_gvimrc INIT(= NULL);	/* "-U" cmdline argument */
+EXTERN guicolor_T hi_color_normal_fg_color INIT(= INVALCOLOR);
+EXTERN guicolor_T hi_color_normal_bg_color INIT(= INVALCOLOR);
 #endif
 EXTERN int	cterm_normal_fg_color INIT(= 0);
 EXTERN int	cterm_normal_fg_bold INIT(= 0);
