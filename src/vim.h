@@ -2153,6 +2153,10 @@ typedef int VimClipboard;	/* This is required for the prototypes. */
 			       multiple signs exist on the line */
 #endif
 
+#ifdef FEAT_GUI
+# define HI_COLOR (t_colors > 256)
+#endif
+
 #if defined(FEAT_GUI) && defined(FEAT_XCLIPBOARD)
 # ifdef FEAT_GUI_GTK
    /* Avoid using a global variable for the X display.  It's ugly
