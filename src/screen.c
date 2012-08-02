@@ -7372,6 +7372,7 @@ screen_puts_len(text, textlen, row, col, attr)
 	    if (need_redraw && ScreenLines[off] != ' ' && (
 # ifdef FEAT_GUI
 		    gui.in_use
+		    || HI_COLOR
 # endif
 # if defined(FEAT_GUI) && defined(UNIX)
 		    ||
@@ -7857,6 +7858,12 @@ screen_start_highlight(attr)
 	{
 	    if (attr > HL_ALL)				/* special HL attr. */
 	    {
+#ifdef FEAT_GUI
+		if (HI_COLOR) {
+		    aep = syn_gui_attr2entry(attr);
+		}
+		else
+#endif
 		if (t_colors > 1)
 		    aep = syn_cterm_attr2entry(attr);
 		else
@@ -7868,7 +7875,7 @@ screen_start_highlight(attr)
 	    }
 	    if ((attr & HL_BOLD) && T_MD != NULL)	/* bold */
 		out_str(T_MD);
-	    else if (aep != NULL && t_colors > 1 && aep->ae_u.cterm.fg_color
+	    else if (aep != NULL && !HI_COLOR && t_colors > 1 && aep->ae_u.cterm.fg_color
 						      && cterm_normal_fg_bold)
 		/* If the Normal FG color has BOLD attribute and the new HL
 		 * has a FG color defined, clear BOLD. */
@@ -7889,6 +7896,18 @@ screen_start_highlight(attr)
 	     */
 	    if (aep != NULL)
 	    {
+#ifdef FEAT_GUI
+		if (HI_COLOR)
+		{
+		    if (aep->ae_u.gui.fg_color != INVALCOLOR)
+			term_color_24bit_fg(aep->ae_u.gui.fg_color);
+		    //else term_color_24bit(0x000099l, 38); /* TODO - debugging... */
+		    if (aep->ae_u.gui.bg_color != INVALCOLOR)
+			term_color_24bit_bg(aep->ae_u.gui.bg_color);
+		    //else term_color_24bit(0xff0000l, 48); /* TODO - debugging... */
+		}
+		else
+#endif
 		if (t_colors > 1)
 		{
 		    if (aep->ae_u.cterm.fg_color)
@@ -7903,7 +7922,7 @@ screen_start_highlight(attr)
 		}
 	    }
 	}
-    }
+    } // else term_color_24bit(0x009900l, 38); /* TODO - debugging... */
 }
 
       void
@@ -7933,6 +7952,18 @@ screen_stop_highlight()
 	    {
 		attrentry_T *aep;
 
+#ifdef FEAT_GUI
+		if (HI_COLOR)
+		{
+		    aep = syn_gui_attr2entry(screen_attr);
+		    if (aep != NULL && (
+			    aep->ae_u.gui.fg_color != INVALCOLOR
+			    || aep->ae_u.gui.bg_color != INVALCOLOR
+			))
+			do_ME = TRUE;
+		}
+		else
+#endif
 		if (t_colors > 1)
 		{
 		    /*
@@ -7988,6 +8019,16 @@ screen_stop_highlight()
 	    if (do_ME || (screen_attr & (HL_BOLD | HL_INVERSE)))
 		out_str(T_ME);
 
+#ifdef FEAT_GUI
+	    if (HI_COLOR)
+	    {
+		if (hi_color_normal_fg_color != INVALCOLOR)
+			term_color_24bit_fg(hi_color_normal_fg_color);
+		if (hi_color_normal_bg_color != INVALCOLOR)
+			term_color_24bit_bg(hi_color_normal_bg_color);
+	    }
+	    else
+#endif
 	    if (t_colors > 1)
 	    {
 		/* set Normal cterm colors */
