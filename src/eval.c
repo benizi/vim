@@ -12558,7 +12558,7 @@ f_has(argvars, rettv)
 #endif
 #ifdef FEAT_GUI
 	else if (STRICMP(name, "gui_running") == 0)
-	    n = (gui.in_use || gui.starting);
+	    n = (gui.in_use || gui.starting || HI_COLOR);
 # ifdef FEAT_GUI_W32
 	else if (STRICMP(name, "gui_win32s") == 0)
 	    n = gui_is_win32s();
